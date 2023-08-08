@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -68,5 +70,18 @@ class CashCardApplicationTests {
                 .withBasicAuth("sarah1", "abc123")
                 .getForEntity("/cashcards/102", String.class); // kumar2's data
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+    @Test
+    void shouldUpdateCashCard(){
+        CashCard obj = new CashCard(null,123.0,"sarah1");
+        HttpEntity<CashCard> entity = new HttpEntity<>(obj);
+        ResponseEntity<Void> response = restTemplate.withBasicAuth("sarah1","abc123").exchange("/cashcards/95", HttpMethod.PUT,entity,Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        ResponseEntity<String> getCC = restTemplate.withBasicAuth("sarah1","abc123").getForEntity("/cashcards/95",String.class);
+        DocumentContext documentContext = JsonPath.parse(getCC.getBody());
+        Number id = documentContext.read("$.id");
+        Double amount= documentContext.read("$.amount");
+        assertThat(id).isEqualTo(99);
+        assertThat(amount).isEqualTo(123);
     }
 }

@@ -36,7 +36,15 @@ public class CashCardController {
         CashCard ccToSave=cashCardRepository.save(newCC);
         URI uri = ucb.path("/cashcards/{id}").buildAndExpand(ccToSave.id()).toUri();
         return ResponseEntity.created(uri).build();
-
+    }
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Void> update(@PathVariable Long id,@RequestBody CashCard ccReq,Principal principal){
+        CashCard ccToUpdate = cashCardRepository.findByIdAndOwner(id,principal.getName());
+        if(ccToUpdate==null)
+            return ResponseEntity.notFound().build();
+        CashCard newCc = new CashCard(ccToUpdate.id(),ccReq.amount(), principal.getName());
+        cashCardRepository.save(newCc);
+        return ResponseEntity.noContent().build();
     }
     @GetMapping
     public ResponseEntity<List<CashCard>> findAll(Pageable pageable,Principal principal) {
