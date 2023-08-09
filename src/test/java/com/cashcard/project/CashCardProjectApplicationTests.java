@@ -12,9 +12,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 
-import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,7 +42,6 @@ class CashCardApplicationTests {
         assertThat(page.size()).isEqualTo(1);
 
     }
-    @DirtiesContext
     @Test
     void shouldReturnAPageOfCashCards() {
         ResponseEntity<String> response = restTemplate.withBasicAuth("sarah1", "abc123").getForEntity("/cashcards?page=0&size=1", String.class);

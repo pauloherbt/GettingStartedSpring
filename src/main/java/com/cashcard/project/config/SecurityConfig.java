@@ -16,7 +16,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests().requestMatchers("/cashcards/**")
-                        .hasAnyRole("CARD-OWNER","NO-CARD-OWNER").and().csrf().disable().httpBasic();
+                        .hasAnyRole("CARD-OWNER").and().csrf().disable().httpBasic();
         return httpSecurity.build();
     }
     @Bean
@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .roles("CARD-OWNER").build();
         UserDetails hank = users.username("hank-no-card")
                 .password(passwordEncoder.encode("abc123"))
-                .roles("NO-CARD-OWNER").build();
+                .roles("CARD-OWNER").build();
 
         return new InMemoryUserDetailsManager(sarah,hank);
     }

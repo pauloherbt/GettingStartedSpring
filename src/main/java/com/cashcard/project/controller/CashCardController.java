@@ -2,7 +2,6 @@ package com.cashcard.project.controller;
 
 import com.cashcard.project.entities.CashCard;
 import com.cashcard.project.repository.CashCardRepository;
-import org.apache.catalina.connector.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -57,11 +56,11 @@ public class CashCardController {
     }
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id,Principal principal ) {
-        CashCard toDelete = cashCardRepository.findByIdAndOwner(id, principal.getName());
-        if (toDelete != null) {
-            cashCardRepository.delete(toDelete);
+        //versao com existsById (perfomance)
+        if(cashCardRepository.existsByIdAndOwner(id,principal.getName())){ //autenticado
+            cashCardRepository.deleteById(id);
             return ResponseEntity.noContent().build();
         }
-        // boa pratica seria implementar o existbyid pois o find se achar carrega dados que nao serao usados!!!!
+        return ResponseEntity.notFound().build();
     }
 }
