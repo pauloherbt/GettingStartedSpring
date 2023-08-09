@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface CashCardRepository extends CrudRepository<CashCard, Long>, PagingAndSortingRepository<CashCard, Long> {
     public CashCard findByIdAndOwner(Long id,String owner);
     public Page<CashCard> findByOwner(String owner, PageRequest amount);
+    boolean existsByIdAndOwner(Long id,String owner);
 }

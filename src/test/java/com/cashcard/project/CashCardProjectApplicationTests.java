@@ -12,6 +12,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.net.URI;
 
@@ -40,9 +41,10 @@ class CashCardApplicationTests {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         DocumentContext documentContext = JsonPath.parse(response.getBody());
         JSONArray page = documentContext.read("$[*]");
-        assertThat(page.size()).isEqualTo(0);
+        assertThat(page.size()).isEqualTo(1);
 
     }
+    @DirtiesContext
     @Test
     void shouldReturnAPageOfCashCards() {
         ResponseEntity<String> response = restTemplate.withBasicAuth("sarah1", "abc123").getForEntity("/cashcards?page=0&size=1", String.class);
@@ -75,13 +77,21 @@ class CashCardApplicationTests {
     void shouldUpdateCashCard(){
         CashCard obj = new CashCard(null,123.0,"sarah1");
         HttpEntity<CashCard> entity = new HttpEntity<>(obj);
-        ResponseEntity<Void> response = restTemplate.withBasicAuth("sarah1","abc123").exchange("/cashcards/95", HttpMethod.PUT,entity,Void.class);
+        ResponseEntity<Void> response = restTemplate.withBasicAuth("sarah1","abc123").exchange("/cashcards/101", HttpMethod.PUT,entity,Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-        ResponseEntity<String> getCC = restTemplate.withBasicAuth("sarah1","abc123").getForEntity("/cashcards/95",String.class);
+        ResponseEntity<String> getCC = restTemplate.withBasicAuth("sarah1","abc123").getForEntity("/cashcards/101",String.class);
         DocumentContext documentContext = JsonPath.parse(getCC.getBody());
         Number id = documentContext.read("$.id");
         Double amount= documentContext.read("$.amount");
-        assertThat(id).isEqualTo(99);
+        assertThat(id).isEqualTo(101);
         assertThat(amount).isEqualTo(123);
+    }
+    @Test
+    void shouldDeleteCashCard(){
+        ResponseEntity<Void> response = restTemplate.withBasicAuth("sarah1", "abc123").exchange("/cashcards/99",HttpMethod.DELETE,null,Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        ResponseEntity<String> getCc = restTemplate.withBasicAuth("sarah1", "abc123").getForEntity("/cashcards/99", String.class);
+        assertThat(getCc.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
     }
 }
